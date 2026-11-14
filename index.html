@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Latihan Irodori — Pink &amp; Kuning</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+  }
+  .container {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    max-width: 760px;
+    width: 100%;
+    padding: 30px;
+    position: relative;
+  }
+  h1 { font-size: 1.4em; color: #333; margin-bottom: 6px; text-align: center; }
+  .subtitle { text-align: center; color: #888; font-size: 0.85em; margin-bottom: 20px; }
+
+  .menu { text-align: center; }
+  .menu .btn { margin-top: 12px; }
+  .menu-desc { color: #666; font-size: 0.95em; margin-bottom: 8px; line-height: 1.6; }
+  .badge-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 16px 0; }
+  .badge {
+    background: #f0f2ff; color: #667eea; padding: 6px 14px; border-radius: 20px;
+    font-size: 0.85em; font-weight: 600;
+  }
+
+  /* === Penjelasan Mode di Menu === */
+  .mode-explanation {
+    background: #f8f9ff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin: 16px 0;
+    text-align: left;
+    font-size: 0.88em;
+    line-height: 1.65;
+    color: #444;
+    border-left: 4px solid #667eea;
+  }
+  .mode-explanation > strong {
+    color: #667eea;
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.95em;
+  }
+  .mode-explanation .mode-item {
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #dde1ff;
+  }
+  .mode-explanation .mode-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+  .mode-explanation .mode-item strong { color: #333; }
+  .mode-explanation .mode-item small { display: block; color: #666; margin-top: 3px; }
+
+  /* === FITUR SESI BOX === */
+  .session-box {
+    background: #f8f9ff;
+    border: 2px dashed #667eea;
+    border-radius: 12px;
+    padding: 15px;
+    margin: 15px 0;
+    text-align: left;
+  }
+  .session-info { display: flex; align-items: center; gap: 8px; font-size: 0.95em; color: #444; flex-wrap: wrap;}
+  .session-info strong { color: #667eea; font-family: monospace; font-size: 1.1em; background: #e8ecff; padding: 2px 8px; border-radius: 6px;}
+  .session-btn { background: #667eea; color: white; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-size: 0.85em; margin-top: 10px; width: 100%; font-weight: bold; transition: 0.2s;}
+  .session-btn:hover { background: #764ba2; }
+
+  /* === Input Form === */
+  .input-group { text-align: left; margin-bottom: 15px; }
+  .input-group label { display: block; font-size: 0.9em; font-weight: 600; color: #444; margin-bottom: 5px; }
+  .input-group input { 
+    width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 1em; outline: none; transition: 0.2s;
+  }
+  .input-group input:focus { border-color: #667eea; box-shadow: 0 0 5px rgba(102,126,234,0.3); }
+
+  .progress-bar {
+    height: 8px; background: #eee; border-radius: 10px; overflow: hidden; margin-bottom: 20px;
+  }
+  .progress-fill {
+    height: 100%; background: linear-gradient(90deg, #667eea, #764ba2);
+    width: 0%; transition: width 0.3s ease;
+  }
+  .info-row {
+    display: flex; justify-content: space-between; font-size: 0.85em;
+    color: #666; margin-bottom: 12px; font-weight: 600;
+  }
+  .timer-box {
+    background: #fff3cd; color: #856404; padding: 4px 12px; border-radius: 20px;
+    font-weight: 700; font-size: 0.85em; transition: all 0.2s;
+  }
+  .timer-box.warning { background: #f8d7da; color: #721c24; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+
+  .question {
+    font-size: 1.05em; color: #222; margin-bottom: 20px; line-height: 1.75;
+    min-height: 60px;
+    white-space: pre-line;
+  }
+  .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .option {
+    padding: 14px 18px; border: 2px solid #e0e0e0; border-radius: 12px;
+    cursor: pointer; transition: all 0.2s; font-size: 1em; color: #333;
+    background: #fafafa; text-align: left; display: flex; align-items: center; gap: 10px;
+  }
+  .option:hover:not(.disabled) { border-color: #667eea; background: #f0f2ff; transform: translateX(4px); }
+  .option .label { font-weight: 700; color: #667eea; min-width: 22px; }
+  .option.correct { background: #d4edda; border-color: #28a745; color: #155724; }
+  .option.correct .label { color: #28a745; }
+  .option.wrong { background: #f8d7da; border-color: #dc3545; color: #721c24; }
+  .option.wrong .label { color: #dc3545; }
+  .option.disabled { cursor: not-allowed; }
+  .option.selected { border-color: #667eea; background: #e8ecff; }
+
+  .feedback {
+    padding: 12px 14px; border-radius: 10px; font-weight: 600;
+    margin-bottom: 15px; display: none; text-align: left; line-height: 1.6;
+  }
+  .feedback.show { display: block; }
+  .feedback.correct { background: #d4edda; color: #155724; }
+  .feedback.wrong { background: #f8d7da; color: #721c24; }
+  .feedback small { display: block; margin-top: 6px; font-weight: 400; opacity: 0.85; }
+
+  .btn {
+    width: 100%; padding: 14px; border: none; border-radius: 12px;
+    font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.2s;
+    background: linear-gradient(90deg, #667eea, #764ba2); color: #fff;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(102,126,234,0.4); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn.secondary { background: #eee; color: #333; }
+  .btn.secondary:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.1); }
+  .btn-row { display: flex; gap: 10px; }
+
+  .result-screen { text-align: center; display: none; }
+  .result-screen.show { display: block; }
+  .score-big {
+    font-size: 3.5em; font-weight: 800;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin: 10px 0;
+  }
+  .result-detail { color: #666; margin-bottom: 20px; font-size: 1.05em; line-height: 1.6; }
+  .review-list { text-align: left; margin-top: 20px; max-height: 420px; overflow-y: auto; }
+  .review-item { padding: 12px; border-bottom: 1px solid #eee; font-size: 0.9em; }
+  .review-item.correct { border-left: 4px solid #28a745; }
+  .review-item.wrong { border-left: 4px solid #dc3545; }
+  .review-q { font-weight: 600; margin-bottom: 4px; color: #333; white-space: pre-line; }
+  .review-a { color: #666; font-size: 0.9em; }
+  .review-a .ok { color: #28a745; font-weight: 700; }
+  .review-a .no { color: #dc3545; font-weight: 700; }
+  .review-p {
+    color: #444; margin-top: 6px; font-size: 0.88em;
+    background: #f8f9ff; padding: 8px 10px; border-radius: 6px;
+    border-left: 3px solid #667eea;
+  }
+
+  .lb-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.92em; }
+  .lb-table th, .lb-table td { padding: 8px 10px; text-align: left; border-bottom: 1px solid #eee; }
+  .lb-table th { background: #f0f2ff; color: #667eea; font-weight: 700; }
+  .lb-table tr:nth-child(1) td { font-weight: 700; color: #b8860b; }
+  .lb-empty { color: #999; text-align: center; padding: 30px; font-style: italic; }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 500px) {
+    .container { padding: 20px; }
+    h1 { font-size: 1.2em; }
+    .question { font-size: 1em; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div id="menu-screen" class="menu">
+    <h1>🇯🇵 Latihan Irodori Pink &amp; Kuning</h1>
+    <p class="subtitle" id="menu-subtitle">0 Soal • Referensi IRODORI</p>
+    
+    <div class="badge-row">
+      <span class="badge" id="timer-badge">⏱️ Min 30s</span>
+      <span class="badge">🔀 Soal Acak</span>
+      <span class="badge">🏆 Leaderboard</span>
+      <span class="badge">🔊 Suara</span>
+    </div>
+
+    <!-- === FITUR SESI === -->
+    <div class="session-box">
+      <div class="session-info">
+        🗂️ Sesi Aktif: <strong id="session-id-display">Memuat...</strong>
+      </div>
+      <p style="font-size: 0.8em; color: #666; margin-top: 8px;">
+        *Klik tombol di bawah untuk menyalin link sesi ini dan bagikan ke siswa. Semua laporan dari link ini akan dikelompokkan dalam 1 sesi.
+      </p>
+      <button class="session-btn" id="copy-session-btn">📋 Salin Link Sesi</button>
+    </div>
+
+    <!-- === FORM INPUT NAMA & KELAS === -->
+    <div class="input-group">
+      <label>Nama Siswa</label>
+      <input type="text" id="student-name" placeholder="Masukkan nama lengkap..." />
+    </div>
+    <div class="input-group">
+      <label>Kelas</label>
+      <input type="text" id="student-class" placeholder="Contoh: X-A / XII IPA 1" />
+    </div>
+
+    <p class="menu-desc">Pilih mode di bawah ini:</p>
+
+    <!-- === PENJELASAN MODE === -->
+    <div class="mode-explanation">
+      <strong>📖 Penjelasan Mode Latihan &amp; Ujian</strong>
+      <div class="mode-item">
+        <strong>🎯 Mode Latihan (Feedback Langsung)</strong>
+        <small>Setelah memilih jawaban, kamu langsung melihat apakah benar (✅) atau salah (❌), plus <b>penjelasan singkat (💡)</b> di bawahnya. Cocok untuk <b>belajar sambil memahami pola</b>, kesalahan, dan tata bahasa.</small>
+      </div>
+      <div class="mode-item">
+        <strong>📊 Mode Ujian (Hasil di Akhir)</strong>
+        <small>Jawaban <b>tidak</b> diberi feedback selama quiz. Skor dan <b>review lengkap beserta penjelasan</b> baru muncul setelah semua soal selesai. Cocok untuk <b>mengukur pemahaman</b> secara objektif.</small>
+      </div>
+      <div class="mode-item">
+        <strong>📤 Laporan Otomatis</strong>
+        <small>Setelah selesai, nilai akan otomatis dikirim ke Google Sheets dan Email Guru.</small>
+      </div>
+    </div>
+
+    <button class="btn" id="start-normal-btn">🎯 Mode Latihan (Feedback Langsung)</button>
+    <button class="btn secondary" id="start-exam-btn">📊 Mode Ujian (Hasil di Akhir)</button>
+    <button class="btn secondary" id="show-lb-btn">🏆 Lihat Leaderboard</button>
+  </div>
+
+  <div id="quiz-screen" class="hidden">
+    <div class="info-row">
+      <span id="progress-text">Soal 1 / 0</span>
+      <span id="timer-display" class="timer-box">⏱️ 30s</span>
+      <span id="score-text">Skor: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="question" id="question-text"></div>
+    <div class="options" id="options-container"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn" id="next-btn" disabled>Lanjut →</button>
+  </div>
+
+  <div id="result-screen" class="result-screen">
+    <h1>🎉 Selesai!</h1>
+    <div class="score-big" id="final-score">0</div>
+    <p class="result-detail" id="final-detail"></p>
+    <p id="send-status" style="color: #667eea; font-weight: 600; font-size: 0.9em; margin-bottom: 10px;"></p>
+    <div class="review-list" id="review-list"></div>
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn" id="restart-btn">🔄 Ulangi Quiz</button>
+      <button class="btn secondary" id="back-menu-btn">🏠 Menu</button>
+    </div>
+  </div>
+
+  <div id="lb-screen" class="hidden">
+    <h1>🏆 Leaderboard</h1>
+    <p class="subtitle">Top 10 skor terbaik (tersimpan di browser ini)</p>
+    <div id="lb-content"></div>
+    <div class="btn-row" style="margin-top:20px;">
+      <button class="btn secondary" id="clear-lb-btn">🗑️ Hapus Semua</button>
+      <button class="btn" id="lb-back-btn">🏠 Menu</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ============================================================
+// ====== KONFIGURASI ======
+// ============================================================
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZD63Fzxr5I39JFGe6GcGNol6xl4hpc_kklwpMdDfdfDE9_YBJgiBXUdH22OnsMs2-lw/exec';
+
+const CONFIG = {
+  minTimePerQuestion: 30,
+  maxTimePerQuestion: 120,
+  timePerQuestion: 0,
+  shuffleQuestions: true,
+  shuffleOptions: false,
+  soundEnabled: true,
+  leaderboardKey: 'irodori_60_leaderboard_v1',
+  maxLeaderboard: 10,
+  examModeDefault: false
+};
+
+let studentName = "";
+let studentClass = "";
+
+// ============================================================
+// ====== LOGIKA SESI (PER LINK) ======
+// ============================================================
+function getSessionInfo() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlSesi = urlParams.get('sesi');
+
+  if (urlSesi) {
+    return urlSesi.replace(/[^a-zA-Z0-9_\-]/g, ''); 
+  } else {
+    const now = new Date();
+    const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+    return `SESI-${dateStr}`;
+  }
+}
+
+let CURRENT_SESSION = getSessionInfo();
+
+function updateSessionUI() {
+  document.getElementById('session-id-display').textContent = CURRENT_SESSION;
+}
+
+function copySessionLink() {
+  const url = new URL(window.location.href);
+  url.searchParams.set('sesi', CURRENT_SESSION);
+  const link = url.toString();
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(link).then(() => {
+      alert('✅ Link Sesi Berhasil Disalin!\n\n' + link + '\n\nBagikan link ini ke siswa.');
+    }).catch(() => prompt('Salin link ini secara manual:', link));
+  } else {
+    prompt('Salin link ini secara manual:', link);
+  }
+}
+
+// ============================================================
+// ====== AREA INPUT SOAL ======
+// ============================================================
+// PETUNJUK PENGISIAN SOAL:
+// - q: Pertanyaan (Gunakan \n untuk membuat baris baru/enter)
+// - o: Pilihan jawaban dalam bentuk array. Urutannya A, B, C, D.
+// - a: Kunci jawaban. (0 = A, 1 = B, 2 = C, 3 = D)
+// - t: Waktu timer dalam detik (Opsional. Jika tidak diisi, otomatis 30-120 detik).
+// - p: Penjelasan jawaban dalam bahasa Indonesia (Akan muncul saat pembahasan).
+
+const QUESTIONS = [
+  // ============================================================
+  // BAGIAN 1: HYOUGEN (表現) — 30 SOAL
+  // ============================================================
+  {
+    q: "A：じゃあ、（ ）。おやすみなさい。\nB：おやすみなさい。\n(Kalimat yang tepat untuk melengkapi percakapan di atas adalah...)",
+    o: [
+      "おさきにしつれいします (Saya permisi duluan)",
+      "いってらっしゃい (Hati-hati di jalan)",
+      "おかえりなさい (Selamat datang kembali)",
+      "いただきます (Selamat makan)"
+    ],
+    a: 0,
+    t: 45,
+    p: "「お先に失礼します」digunakan saat ingin pamit pulang lebih dulu daripada orang lain. Dalam percakapan ini, si pembicara pamit tidur lebih dulu, lalu diikuti salam 「おやすみなさい」."
+  },
+  {
+    q: "A：どうぞ。\nB：すみません。（ ）。\n(Kalimat yang tepat untuk melengkapi percakapan saat menerima sesuatu adalah...)",
+    o: [
+      "いただきます (Selamat makan)",
+      "ありがとうございます (Terima kasih)",
+      "ごちそうさまでした (Terima kasih atas makanannya)",
+      "おかまいなく (Jangan repot-repot)"
+    ],
+    a: 1,
+    t: 40,
+    p: "Saat menerima sesuatu dari orang lain, kita mengucapkan 「ありがとうございます」sebagai ungkapan terima kasih. Kata 「すみません」di depannya berfungsi sebagai 'maaf sudah merepotkan'."
+  },
+  {
+    q: "A：あめ、どうぞ。\nB：（ ）。\n(Jawaban yang tepat saat ditawari payung adalah...)",
+    o: [
+      "いいえ、けっこうです (Tidak, tidak perlu)",
+      "すみません、おねがいします (Maaf, tolong ya)",
+      "どういたしまして (Tidak apa-apa)",
+      "おかげさまで (Berkat Anda)"
+    ],
+    a: 1,
+    t: 45,
+    p: "Saat menerima tawaran kebaikan orang lain, gunakan 「すみません、お願いします」yang berarti 'maaf merepotkan, ya saya terima'. Frasa ini sangat sopan dan umum dipakai."
+  },
+  {
+    q: "A：いたい！\nB：（ ）。\n(Ungkapan yang tepat saat melihat orang lain kesakitan adalah...)",
+    o: [
+      "おだいじに (Semoga lekas sembuh)",
+      "がんばってください (Semangat ya)",
+      "どうしましたか (Ada apa? / Kenapa?)",
+      "おめでとうございます (Selamat)"
+    ],
+    a: 2,
+    t: 40,
+    p: "Saat melihat seseorang tampak kesakitan atau dalam masalah, tanyakan keadaannya dengan 「どうしましたか」(ada apa? / kenapa?). 「お大事に」diucapkan saat berpamitan pada orang sakit, bukan saat melihat kejadian langsung."
+  },
+  {
+    q: "A：お先に失礼します。\nB：（ ）。\n(Jawaban yang tepat saat seseorang pamit pulang duluan adalah...)",
+    o: [
+      "おつかれさまでした (Terima kasih atas kerja kerasnya)",
+      "いってきます (Saya pergi dulu)",
+      "おかえりなさい (Selamat datang)",
+      "しつれいしました (Maaf telah mengganggu)"
+    ],
+    a: 0,
+    t: 45,
+    p: "Saat rekan kerja pamit pulang, kita membalas dengan 「お疲れさまでした」sebagai penghargaan atas kerja kerasnya hari itu. Ini adalah pasangan tetap dalam budaya kerja Jepang."
+  },
+  {
+    q: "はじめまして。わたしは アニです。どうぞ（ ）。\n(Ungkapan yang tepat untuk melengkapi perkenalan diri adalah...)",
+    o: [
+      "おねがいします (Mohon bantuannya)",
+      "よろしくおねがいします (Mohon kerjasamanya)",
+      "ありがとうございます (Terima kasih)",
+      "すみません (Maaf)"
+    ],
+    a: 1,
+    t: 40,
+    p: "Frasa 「どうぞよろしくお願いします」adalah ungkapan standar penutup perkenalan diri dalam bahasa Jepang. Menambahkan 「どうぞ」di depan membuatnya lebih lengkap dan sopan."
+  },
+  {
+    q: "A：しつれいします。\nB：はい、また（ ）。\n(Ungkapan yang tepat saat akan berpisah adalah...)",
+    o: [
+      "あした (Besok)",
+      "げんきで (Sehat-sehat)",
+      "あいましょう (Mari bertemu)",
+      "おやすみなさい (Selamat tidur)"
+    ],
+    a: 2,
+    t: 40,
+    p: "Saat berpisah dan berharap bertemu lagi, gunakan 「また会いましょう」yang berarti 'mari bertemu lagi'. Bentuk ましょうmenyatakan ajakan."
+  },
+  {
+    q: "A：おめでとうございます。\nB：（ ）。\n(Jawaban yang tepat saat menerima ucapan selamat adalah...)",
+    o: [
+      "おかげさまで (Berkat Anda)",
+      "どういたしまして (Tidak apa-apa)",
+      "おめでとうございます (Selamat)",
+      "すみません (Maaf)"
+    ],
+    a: 0,
+    t: 40,
+    p: "Saat menerima ucapan selamat, orang Jepang sering membalas dengan 「おかげさまで」yang berarti 'berkat dukungan Anda'. Ini adalah bentuk kerendahan hati yang khas."
+  },
+  {
+    q: "A：ごめんなさい。\nB：（ ）。\n(Jawaban yang tepat saat menerima permintaan maaf adalah...)",
+    o: [
+      "だいじょうぶです (Tidak apa-apa)",
+      "すみません (Maaf)",
+      "ごめんなさい (Maaf)",
+      "いただきます (Selamat makan)"
+    ],
+    a: 0,
+    t: 40,
+    p: "Untuk memaafkan seseorang, gunakan 「大丈夫です」yang berarti 'tidak apa-apa / tidak masalah'. Ini adalah balasan paling umum untuk 「ごめんなさい」."
+  },
+  {
+    q: "A：お先に失礼します。\nB：お疲れさまでした。\nPercakapan ini terjadi di...",
+    o: [
+      "Restoran saat akan makan",
+      "Kantor saat akan pulang",
+      "Sekolah saat jam pelajaran",
+      "Toko saat berbelanja"
+    ],
+    a: 1,
+    t: 45,
+    p: "Ungkapan 「お先に失礼します」dan 「お疲れさまでした」adalah pertukaran khas di kantor saat seseorang pulang lebih dulu pada sore/malam hari. Situasi ini sangat umum dalam budaya kerja Jepang."
+  },
+  {
+    q: "A：いってきます。\nB：（ ）。\n(Jawaban yang tepat saat seseorang akan pergi keluar rumah adalah...)",
+    o: [
+      "いってらっしゃい (Hati-hati di jalan)",
+      "おかえりなさい (Selamat datang)",
+      "ただいま (Saya pulang)",
+      "おやすみなさい (Selamat tidur)"
+    ],
+    a: 0,
+    t: 40,
+    p: "Pasangan sapaan saat keluar rumah adalah 「いってきます」(saya pergi dulu) ↔ 「いってらっしゃい」(hati-hati di jalan). Keduanya selalu berpasangan."
+  },
+  {
+    q: "A：ただいま。\nB：（ ）。\n(Jawaban yang tepat saat seseorang baru pulang ke rumah adalah...)",
+    o: [
+      "いってきます (Saya pergi dulu)",
+      "いってらっしゃい (Hati-hati di jalan)",
+      "おかえりなさい (Selamat datang kembali)",
+      "しつれいします (Permisi)"
+    ],
+    a: 2,
+    t: 40,
+    p: "Saat anggota keluarga pulang dan mengucapkan 「ただいま」(saya pulang), jawab dengan 「おかえりなさい」(selamat datang kembali). Ini pasangan tetap dalam keluarga Jepang."
+  },
+  {
+    q: "A：いただきます。\nB：（ ）。\n(Jawaban yang tepat sebelum mulai makan bersama adalah...)",
+    o: [
+      "ごちそうさまでした (Terima kasih atas makanannya)",
+      "どうぞ (Silakan)",
+      "いただきます (Selamat makan)",
+      "おかわり (Tambah lagi)"
+    ],
+    a: 1,
+    t: 40,
+    p: "Sebelum makan, orang Jepang mengucapkan 「いただきます」. Tuan rumah atau yang mentraktir biasanya membalas dengan 「どうぞ」(silakan), mempersilakan tamu untuk mulai makan."
+  },
+  {
+    q: "A：ごちそうさまでした。\nB：（ ）。\n(Jawaban yang tepat setelah selesai makan adalah...)",
+    o: [
+      "いただきます (Selamat makan)",
+      "どういたしまして (Tidak apa-apa)",
+      "おかげさまで (Berkat Anda)",
+      "おそまつさまでした (Maaf makanannya sederhana)"
+    ],
+    a: 3,
+    t: 45,
+    p: "Setelah tamu mengucapkan 「ごちそうさまでした」(terima kasih atas makanannya), tuan rumah sering membalas dengan 「おそまつさまでした」(maaf makanannya sederhana). Ini adalah ungkapan merendah khas Jepang."
+  },
+  {
+    q: "A：はじめまして。どうぞよろしくおねがいします。\nB：（ ）。\n(Jawaban yang tepat untuk membalas perkenalan adalah...)",
+    o: [
+      "こちらこそ、よろしくおねがいします (Saya juga, mohon bantuannya)",
+      "おめでとうございます (Selamat)",
+      "おかげさまで (Berkat Anda)",
+      "しつれいします (Permisi)"
+    ],
+    a: 0,
+    t: 45,
+    p: "Saat membalas perkenalan, gunakan 「こちらこそ、よろしくお願いします」yang berarti 'saya juga mohon bantuannya'. 「こちらこそ」= 'sebaliknya, saya juga'."
+  },
+  {
+    q: "A：おじゃまします。\nB：（ ）。\n(Ungkapan yang tepat saat dipersilakan masuk ke rumah orang adalah...)",
+    o: [
+      "しつれいしました (Maaf telah mengganggu)",
+      "おじゃましました (Maaf telah mengganggu)",
+      "どうぞ、あがってください (Silakan, masuklah)",
+      "おかまいなく (Jangan repot-repot)"
+    ],
+    a: 2,
+    t: 45,
+    p: "Saat tamu mengucapkan 「おじゃまします」(permisi, saya mengganggu), tuan rumah mempersilakan masuk dengan 「どうぞ、あがってください」(silakan, masuklah). 「あがる」= naik/masuk ke dalam rumah."
+  },
+  {
+    q: "A：おじゃましました。\nB：（ ）。\n(Ungkapan yang tepat saat tamu pamit pulang adalah...)",
+    o: [
+      "どうぞ、あがってください (Silakan masuk)",
+      "おじゃまします (Saya mengganggu)",
+      "おかまいなく (Jangan repot-repot)",
+      "また、きてくださいね (Silakan datang lagi ya)"
+    ],
+    a: 3,
+    t: 45,
+    p: "Saat tamu pamit dengan 「おじゃましました」(maaf telah mengganggu), tuan rumah biasanya mengucapkan 「また、来てくださいね」(silakan datang lagi ya) sebagai bentuk keramahan."
+  },
+  {
+    q: "A：おかまいなく。\nB：いいえ、どうぞ。\nPercakapan ini menunjukkan bahwa A...",
+    o: [
+      "Ingin segera pulang",
+      "Menolak tawaran dengan sopan",
+      "Meminta makanan",
+      "Mengucapkan terima kasih"
+    ],
+    a: 1,
+    t: 45,
+    p: "「おかまいなく」adalah ungkapan sopan untuk menolak tawaran atau perhatian orang lain, seperti 'jangan repot-repot'. Meskipun menolak, tuan rumah tetap boleh mendesak dengan 「いいえ、どうぞ」(tidak, silakan)."
+  },
+  {
+    q: "A：もしもし、田中さんのお宅ですか。\nB：はい、（ ）です。\n(Ungkapan yang tepat saat menerima telepon adalah...)",
+    o: [
+      "田中",
+      "はい、田中です",
+      "もしもし",
+      "おそれいります"
+    ],
+    a: 1,
+    t: 40,
+    p: "Saat menerima telepon dan memastikan identitas, jawab dengan 「はい、田中です」(Ya, ini Tanaka). Menambahkan 「はい」di depan membuatnya lebih jelas sebagai konfirmasi."
+  },
+  {
+    q: "A：いま、よろしいですか。\nB：（ ）。\n(Jawaban yang tepat jika saat itu boleh menerima telepon adalah...)",
+    o: [
+      "はい、どうぞ (Ya, silakan)",
+      "いいえ、けっこうです (Tidak, tidak perlu)",
+      "すみません、ちょっと (Maaf, sedikit sibuk)",
+      "もしもし (Halo)"
+    ],
+    a: 0,
+    t: 40,
+    p: "「いま、よろしいですか」berarti 'apakah sekarang boleh?'. Jika boleh, jawab dengan 「はい、どうぞ」(ya, silakan). Jika tidak, gunakan 「すみません、ちょっと」."
+  },
+  {
+    q: "A：しつれいですが、お名前は？\nB：（ ）。\n(Ungkapan yang tepat untuk menanyakan nama dengan sopan adalah...)",
+    o: [
+      "アニです",
+      "わたしはアニです",
+      "お名前はアニです",
+      "アニと申します"
+    ],
+    a: 3,
+    t: 45,
+    p: "「〜と申します」(〜ともうします) adalah bentuk sangat sopan untuk menyebutkan nama sendiri. Digunakan dalam situasi formal seperti wawancara kerja, berbisnis, atau saat berkenalan dengan orang yang lebih tinggi statusnya."
+  },
+  {
+    q: "A：お先に失礼します。\nB：お疲れさまでした。\nUngkapan 「お疲れさまでした」memiliki makna...",
+    o: [
+      "Selamat pagi",
+      "Terima kasih atas kerja kerasnya",
+      "Sampai jumpa besok",
+      "Maaf saya pulang duluan"
+    ],
+    a: 1,
+    t: 45,
+    p: "「お疲れさまでした」secara harfiah berarti 'Anda telah lelah', digunakan untuk mengapresiasi kerja keras seseorang. Sangat umum diucapkan saat rekan kerja pulang atau setelah menyelesaikan suatu pekerjaan."
+  },
+  {
+    q: "A：どうぞおさきに。\nB：（ ）。\n(Ungkapan yang tepat saat dipersilakan duluan adalah...)",
+    o: [
+      "おさきにしつれいします (Saya permisi duluan)",
+      "いいえ、おさきにどうぞ (Tidak, silakan duluan)",
+      "ありがとうございます (Terima kasih)",
+      "すみません (Maaf)"
+    ],
+    a: 0,
+    t: 45,
+    p: "Saat dipersilakan duluan, kita menerima dengan sopan menggunakan 「お先に失礼します」(saya permisi duluan). Ini adalah pasangan tetap dari 「どうぞお先に」."
+  },
+  {
+    q: "A：おめでとうございます。\nB：ありがとうございます。\nPercakapan ini paling mungkin terjadi saat...",
+    o: [
+      "Seseorang sedang sakit",
+      "Seseorang berulang tahun atau lulus",
+      "Seseorang akan tidur",
+      "Seseorang akan makan"
+    ],
+    a: 1,
+    t: 45,
+    p: "「おめでとうございます」adalah ucapan selamat yang digunakan untuk momen bahagia seperti ulang tahun (誕生日おめでとう), kelulusan (卒業おめでとう), pernikahan, atau kelahiran."
+  },
+  {
+    q: "A：ごめんください。\nB：はい、どなたですか。\nUngkapan 「ごめんください」digunakan saat...",
+    o: [
+      "Bertamu ke rumah orang",
+      "Menelepon seseorang",
+      "Makan di restoran",
+      "Berbelanja di toko"
+    ],
+    a: 0,
+    t: 40,
+    p: "「ごめんください」adalah ucapan saat bertamu atau mengetuk pintu rumah orang lain, berarti 'permisi'. Balasan dari dalam rumah biasanya 「はい、どなたですか」(ya, siapa ya?)."
+  },
+  {
+    q: "A：しつれいします。\nB：はい、またあした。\nPercakapan ini terjadi saat...",
+    o: [
+      "Pagi hari di sekolah",
+      "Saat berpisah di kantor atau sekolah",
+      "Saat makan siang",
+      "Saat menelepon"
+    ],
+    a: 1,
+    t: 40,
+    p: "「失礼します」dapat digunakan saat memasuki ruangan atau saat pamit berpisah, terutama di lingkungan kerja atau sekolah. Diikuti 「またあした」(sampai besok) menandakan perpisahan di akhir hari."
+  },
+  {
+    q: "A：おかげさまで、げんきです。\nUngkapan ini diucapkan saat...",
+    o: [
+      "Menanyakan kabar seseorang",
+      "Menjawab pertanyaan kabar dengan sopan",
+      "Mengucapkan selamat tinggal",
+      "Meminta maaf"
+    ],
+    a: 1,
+    t: 45,
+    p: "「おかげさまで」secara harfiah berarti 'berkat Anda', digunakan sebagai jawaban sopan saat ditanya kabar. Contohnya saat menjawab 「お元気ですか」dengan 「おかげさまで、元気です」."
+  },
+  {
+    q: "A：どういたしまして。\nUngkapan ini adalah jawaban dari...",
+    o: [
+      "ごめんなさい (Maaf)",
+      "ありがとうございます (Terima kasih)",
+      "おやすみなさい (Selamat tidur)",
+      "いただきます (Selamat makan)"
+    ],
+    a: 1,
+    t: 40,
+    p: "「どういたしまして」berarti 'tidak apa-apa' atau 'dengan senang hati', digunakan untuk membalas ucapan terima kasih (ありがとうございます). Padanan Indonesianya seperti 'sama-sama'."
+  },
+  {
+    q: "A：お先に失礼します。\nB：お疲れさまでした。\nSituasi yang paling tepat untuk percakapan ini adalah...",
+    o: [
+      "Pagi hari saat baru tiba di kantor",
+      "Sore hari saat pulang kerja",
+      "Malam hari saat akan tidur",
+      "Siang hari saat makan siang"
+    ],
+    a: 1,
+    t: 45,
+    p: "Percakapan ini adalah rutinitas umum di kantor Jepang saat seseorang pulang lebih dulu pada sore/malam hari. 「お先に失礼します」= pamit duluan, 「お疲れさまでした」= terima kasih atas kerja kerasnya."
+  },
+  {
+    q: "A：はじめまして。\nB：（ ）。\n(Jawaban yang tepat untuk membalas salam perkenalan pertama kali adalah...)",
+    o: [
+      "はじめまして (Salam kenal)",
+      "こんにちは (Selamat siang)",
+      "おはようございます (Selamat pagi)",
+      "さようなら (Selamat tinggal)"
+    ],
+    a: 0,
+    t: 40,
+    p: "Saat pertama kali bertemu, kedua belah pihak biasanya mengucapkan 「はじめまして」sebagai salam pembuka. Setelah itu baru berlanjut ke perkenalan nama 「わたしは〜です」."
+  },
+
+  // ============================================================
+  // BAGIAN 2: KOSAKATA & KANJI (語彙・漢字) — 20 SOAL
+  // ============================================================
+  {
+    q: "この 近所に ゆうびんきょくが ありますか。\n(Arti kata 「近所」pada kalimat di atas adalah...)",
+    o: ["kandang ikan", "tempat terlarang", "lingkungan sekitar", "dekat"],
+    a: 2,
+    t: 40,
+    p: "「近所」(きんじょ) berarti 'lingkungan sekitar' atau 'tetangga'. Kalimat lengkapnya: 'Apakah di sekitar sini ada kantor pos?'. Kanjinya 近 (dekat) + 所 (tempat), jadi 'tempat yang dekat' = lingkungan sekitar."
+  },
+  {
+    q: "ここに しつもんを 入力 してください。\n(Cara baca kanji 「入力」yang benar adalah...)",
+    o: ["にゅりょく", "にゅうりょく", "にゅうりょうく", "にゅうりょくする"],
+    a: 1,
+    t: 40,
+    p: "「入力」(にゅうりょく) berarti 'memasukkan data' atau 'input'. Kanji 入 (masuk) + 力 (tenaga). Kalimat lengkapnya: 'Silakan masukkan pertanyaan di sini.'"
+  },
+  {
+    q: "秋は、くだものが おいしいです。\n(Cara baca kanji 「秋」adalah...)",
+    o: ["はる", "なつ", "あき", "ふゆ"],
+    a: 2,
+    t: 35,
+    p: "「秋」(あき) berarti 'musim gugur'. Kalimat lengkapnya: 'Pada musim gugur, buah-buahan terasa lezat.' Empat musim dalam bahasa Jepang: 春 (はる), 夏 (なつ), 秋 (あき), 冬 (ふゆ)."
+  },
+  {
+    q: "春に、ピクニックに いきます。\n(Cara baca kanji 「春」adalah...)",
+    o: ["ふゆ", "なつ", "はる", "あき"],
+    a: 2,
+    t: 35,
+    p: "「春」(はる) berarti 'musim semi'. Kalimat lengkapnya: 'Pada musim semi, saya akan pergi piknik.' Musim semi di Jepang identik dengan bunga sakura (桜)."
+  },
+  {
+    q: "こうえんに、いろいろな 花が さいて います。\n(Cara baca kanji 「花」adalah...)",
+    o: ["はな", "はっぱ", "はる", "はた"],
+    a: 0,
+    t: 35,
+    p: "「花」(はな) berarti 'bunga'. Kalimat lengkapnya: 'Di taman, berbagai macam bunga bermekaran.' Kata kerja 咲く (さく) = bermekaran, khusus untuk bunga."
+  },
+  {
+    q: "わたしは、暑いのが だいすきです。\n(Cara baca kanji 「暑い」adalah...)",
+    o: ["あつい", "うまい", "さむい", "からい"],
+    a: 0,
+    t: 35,
+    p: "「暑い」(あつい) berarti 'panas' untuk cuaca. Berbeda dengan 「熱い」(あつい) yang juga dibaca あつい tetapi untuk benda yang panas (misal air panas). Kalimat lengkapnya: 'Saya sangat suka cuaca panas.'"
+  },
+  {
+    q: "夏が だいすきです。\n(Cara baca kanji 「夏」adalah...)",
+    o: ["なつ", "あき", "はる", "ふゆ"],
+    a: 0,
+    t: 35,
+    p: "「夏」(なつ) berarti 'musim panas'. Kalimat lengkapnya: 'Saya sangat suka musim panas.' Musim panas di Jepang identik dengan festival kembang api (花火大会)."
+  },
+  {
+    q: "同じ ようふくを もって います。\n(Cara baca kanji 「同じ」adalah...)",
+    o: ["かんじ", "えんじ", "おなじ", "どうじ"],
+    a: 2,
+    t: 40,
+    p: "「同じ」(おなじ) berarti 'sama'. Kalimat lengkapnya: 'Saya memiliki pakaian yang sama.' 「同じ」adalah kata sifat istimewa yang tidak berubah bentuk sebelum kata benda."
+  },
+  {
+    q: "冬に、みかんを たべます。\n(Cara baca kanji 「冬」adalah...)",
+    o: ["なつ", "はる", "あき", "ふゆ"],
+    a: 3,
+    t: 35,
+    p: "「冬」(ふゆ) berarti 'musim dingin'. Kalimat lengkapnya: 'Pada musim dingin, saya makan jeruk mandarin.' Di Jepang, jeruk mandarin (みかん) adalah buah khas musim dingin."
+  },
+  {
+    q: "きょうは、とても 寒いですね。\n(Cara baca kanji 「寒い」adalah...)",
+    o: ["すずしい", "さむい", "あつい", "つらい"],
+    a: 1,
+    t: 35,
+    p: "「寒い」(さむい) berarti 'dingin' (untuk cuaca). Berbeda dengan 「冷たい」(つめたい) yang berarti 'dingin' untuk benda/sentuhan. 「涼しい」(すずしい) berarti 'sejuk'."
+  },
+  {
+    q: "この りんごは 100えん です。\n(Apel ini harganya 100 yen.)\nKata 「りんご」berarti...",
+    o: ["anggur", "jeruk", "apel", "pisang"],
+    a: 2,
+    t: 35,
+    p: "「りんご」adalah kosakata bahasa Jepang untuk 'apel'. Buah lain: ぶどう (anggur), みかん (jeruk), バナナ (pisang)."
+  },
+  {
+    q: "毎朝 ７じに おきます。\n(Kata 「おきます」dalam kalimat di atas berarti...)",
+    o: ["tidur", "bangun", "makan", "mandi"],
+    a: 1,
+    t: 35,
+    p: "「起きます」(おきます) berarti 'bangun (tidur)'. Kalimat lengkapnya: 'Setiap pagi saya bangun jam 7.' Hati-hati: 「おきます」juga bisa berarti 'terjadi' kalau kanjinya 起こります."
+  },
+  {
+    q: "わたしは まいにち にほんごを べんきょうします。\n(Kata 「べんきょうします」berarti...)",
+    o: ["bekerja", "membaca", "menulis", "belajar"],
+    a: 3,
+    t: 35,
+    p: "「勉強します」(べんきょうします) berarti 'belajar'. Kalimat lengkapnya: 'Saya belajar bahasa Jepang setiap hari.' 「勉強」adalah kata benda yang ditambah 「します」menjadi kata kerja."
+  },
+  {
+    q: "きのう あめが ふりました。\n(Kata 「あめ」dalam kalimat ini berarti...)",
+    o: ["salju", "hujan", "angin", "matahari"],
+    a: 1,
+    t: 35,
+    p: "「雨」(あめ) berarti 'hujan'. Kalimat lengkapnya: 'Kemarin turun hujan.' Cuaca lain: 雪 (ゆき) = salju, 風 (かぜ) = angin, 晴れ (はれ) = cerah."
+  },
+  {
+    q: "この へんは よる あぶないです。\n(Kata 「よる」berarti...)",
+    o: ["pagi", "siang", "sore", "malam"],
+    a: 3,
+    t: 35,
+    p: "「夜」(よる) berarti 'malam'. Kalimat lengkapnya: 'Daerah ini berbahaya pada malam hari.' Pembagian waktu: 朝 (あさ) = pagi, 昼 (ひる) = siang, 夕方 (ゆうがた) = sore, 夜 (よる) = malam."
+  },
+  {
+    q: "この みせは やすくて おいしいです。\n(Kata 「やすい」berarti...)",
+    o: ["mahal", "murah", "enak", "bersih"],
+    a: 1,
+    t: 35,
+    p: "「安い」(やすい) berarti 'murah'. Kalimat lengkapnya: 'Toko ini murah dan enak (makanannya).' Kebalikannya 「高い」(たかい) yang berarti 'mahal' atau 'tinggi'."
+  },
+  {
+    q: "日本では、家に 入る とき、くつを ぬぎます。\n(Kata 「くつ」berarti...)",
+    o: ["topi", "kaus kaki", "sepatu", "tas"],
+    a: 2,
+    t: 35,
+    p: "「靴」(くつ) berarti 'sepatu'. Kalimat lengkapnya: 'Di Jepang, saat masuk rumah, kita melepas sepatu.' Kebiasaan ini sangat khas Jepang dan masih dipraktikkan sampai sekarang."
+  },
+  {
+    q: "先生に 本を かしました。\n(Kata 「かしました」berasal dari kata kerja...)",
+    o: ["借りる (meminjam)", "貸す (meminjamkan)", "返す (mengembalikan)", "送る (mengirim)"],
+    a: 1,
+    t: 40,
+    p: "「貸しました」adalah bentuk lampau dari 「貸す」(かす) yang berarti 'meminjamkan'. Berbeda dengan 「借りる」(かりる) yang berarti 'meminjam'. Kalimat lengkapnya: 'Saya meminjamkan buku kepada guru.'"
+  },
+  {
+    q: "この くすりは しょくごに のんで ください。\n(Kata 「しょくご」berarti...)",
+    o: ["sebelum makan", "saat makan", "setelah makan", "sebelum tidur"],
+    a: 2,
+    t: 40,
+    p: "「食後」(しょくご) berarti 'setelah makan'. Kanji 食 (makan) + 後 (setelah). Kebalikannya 「食前」(しょくぜん) = sebelum makan. Kalimat lengkapnya: 'Minumlah obat ini setelah makan.'"
+  },
+  {
+    q: "あしたは しごとが あります。\n(Kata 「しごと」berarti...)",
+    o: ["libur", "pekerjaan", "sekolah", "hobi"],
+    a: 1,
+    t: 35,
+    p: "「仕事」(しごと) berarti 'pekerjaan'. Kalimat lengkapnya: 'Besok ada pekerjaan (saya bekerja).' Ungkapan 「仕事があります」= ada pekerjaan, sering dipakai untuk menyatakan sedang sibuk."
+  },
+
+  // ============================================================
+  // BAGIAN 3: DOKKAI (読解) — 10 SOAL
+  // ============================================================
+  {
+    q: "アヌ：来月から どくしん（single)です。\n中村：えっ？\nアヌ：実は おおさかの 本社に てんきん（transfer)なんです。\n中村：本社ですか。でも、どうして どくしんに なるんですか。\nアヌ：つまと 子供は 東京に のこるんです。それで、別々に すむんですね。\n\nMengapa Anu akan hidup sendiri mulai bulan depan?",
+    o: [
+      "Karena istrinya meninggalkannya",
+      "Karena ia dipindahtugaskan ke kantor pusat di Osaka",
+      "Karena anaknya kuliah di Osaka",
+      "Karena ia ingin hidup mandiri"
+    ],
+    a: 1,
+    t: 60,
+    p: "Teks menyebutkan 「おおさかの本社にてんきんなんです」(saya dipindahtugaskan ke kantor pusat di Osaka). Karena istri dan anaknya tetap tinggal di Tokyo, Anu harus hidup sendiri di Osaka."
+  },
+  {
+    q: "中村：つまは どうするんですか。\nアヌ：つまは 東京で しごとを つづけるんです。\n\nApa yang akan dilakukan istri Anu?",
+    o: [
+      "Ikut pindah ke Osaka",
+      "Berhenti bekerja",
+      "Melanjutkan pekerjaannya di Tokyo",
+      "Pindah ke rumah orang tuanya"
+    ],
+    a: 2,
+    t: 55,
+    p: "Anu menjelaskan 「つまは東京でしごとをつづけるんです」(istri saya akan melanjutkan pekerjaannya di Tokyo). Kata 続ける (つづける) berarti 'melanjutkan'."
+  },
+  {
+    q: "アヌ：子供は 東京の がっこうに かよいつづけるんです。\n\nMengapa anak Anu tetap di Tokyo?",
+    o: [
+      "Karena ingin dekat dengan teman-temannya",
+      "Karena harus melanjutkan sekolah di Tokyo",
+      "Karena tidak suka Osaka",
+      "Karena tinggal bersama kakek-neneknya"
+    ],
+    a: 1,
+    t: 55,
+    p: "Teks menyebutkan 「子供は東京の学校に通いつづけるんです」(anak saya akan terus bersekolah di Tokyo). Kata 通う (かよう) berarti 'bersekolah/berlalu-lalang', 続ける = melanjutkan."
+  },
+  {
+    q: "中村：たいへんですね。\nアヌ：ええ。でも、まいしゅう しゅうまつには 東京に かえりますから。\n\nBagaimana rencana Anu untuk mengatasi hal ini?",
+    o: [
+      "Akan pulang ke Tokyo setiap akhir pekan",
+      "Akan membawa keluarganya ke Osaka",
+      "Akan berhenti dari pekerjaannya",
+      "Akan tinggal di Osaka selamanya"
+    ],
+    a: 0,
+    t: 55,
+    p: "Anu mengatakan 「まいしゅうしゅうまつには東京にかえりますから」(karena setiap akhir pekan saya akan pulang ke Tokyo). 「毎週」(まいしゅう) = setiap minggu, 「週末」(しゅうまつ) = akhir pekan."
+  },
+  {
+    q: "A：この くすりは いちにち ３かい、しょくごに のんで ください。\nB：はい、わかりました。\n\nBerapa kali obat ini harus diminum dalam sehari?",
+    o: ["1 kali", "2 kali", "3 kali", "4 kali"],
+    a: 2,
+    t: 50,
+    p: "Teks menyebutkan 「いちにち３かい」(ichi-nichi san-kai) yang berarti 'tiga kali sehari'. 「一日」(いちにち) = satu hari, 「三回」(さんかい) = tiga kali."
+  },
+  {
+    q: "A：この くすりは いちにち ３かい、しょくごに のんで ください。\n\nKapan waktu minum obat yang benar?",
+    o: [
+      "Sebelum makan",
+      "Saat makan",
+      "Setelah makan",
+      "Sebelum tidur"
+    ],
+    a: 2,
+    t: 50,
+    p: "Teks menyebutkan 「しょくご」(食後) yang berarti 'setelah makan'. Kebalikannya 「食前」(しょくぜん) = sebelum makan, dan 「寝る前」(ねるまえ) = sebelum tidur."
+  },
+  {
+    q: "わたしの いえは えきから ちかいです。あるいて ５ふんぐらいです。まいにち あるいて えきに いきます。\n\nBerapa lama waktu yang dibutuhkan untuk berjalan kaki dari rumah ke stasiun?",
+    o: ["3 menit", "5 menit", "10 menit", "15 menit"],
+    a: 1,
+    t: 50,
+    p: "Teks menyebutkan 「あるいて５ふんぐらいです」(sekitar 5 menit berjalan kaki). 「五分」(ごふん) = 5 menit, 「ぐらい」= sekitar."
+  },
+  {
+    q: "わたしの いえは えきから ちかいです。あるいて ５ふんぐらいです。まいにち あるいて えきに いきます。\n\nBagaimana cara penulis pergi ke stasiun?",
+    o: ["Naik bus", "Naik sepeda", "Berjalan kaki", "Naik mobil"],
+    a: 2,
+    t: 50,
+    p: "Teks menyebutkan 「まいにちあるいてえきにいきます」(setiap hari saya berjalan kaki ke stasiun). 「歩く」(あるく) = berjalan kaki."
+  },
+  {
+    q: "きょうは あめですから、ピクニックに いきません。あしたは はれますから、ピクニックに いきます。\n\nMengapa piknik tidak dilakukan hari ini?",
+    o: [
+      "Karena cuaca panas",
+      "Karena hujan",
+      "Karena banyak angin",
+      "Karena turun salju"
+    ],
+    a: 1,
+    t: 50,
+    p: "Teks menyebutkan 「きょうはあめですから」(karena hari ini hujan), sehingga piknik dibatalkan. Partikel 「から」menunjukkan alasan/sebab."
+  },
+  {
+    q: "きょうは あめですから、ピクニックに いきません。あしたは はれますから、ピクニックに いきます。\n\nKapan piknik akan dilakukan?",
+    o: ["Hari ini", "Besok", "Minggu depan", "Tidak jadi piknik"],
+    a: 1,
+    t: 50,
+    p: "Teks menyebutkan 「あしたははれますから、ピクニックにいきます」(karena besok cerah, kami akan pergi piknik). 「晴れる」(はれる) = menjadi cerah."
+  }
+];
+
+// ============================================================
+// ====== LOGIKA QUIZ ======
+// ============================================================
+const LABELS = ['A','B','C','D'];
+let current = 0, score = 0, answered = false;
+let order = [], userAnswers = [], examMode = false;
+let timerInterval = null, timeLeft = 0;
+let currentQ = null;
+
+function getQuestionTime(q) {
+  if (q.t && q.t > 0) return Math.max(CONFIG.minTimePerQuestion, q.t);
+  if (CONFIG.timePerQuestion > 0) return CONFIG.timePerQuestion;
+  const qLen = (q.q || '').length;
+  const oLen = (q.o || []).reduce((s, o) => s + (o || '').length, 0);
+  const totalLen = qLen + oLen;
+  const extra = Math.max(0, Math.ceil((totalLen - 80) / 20));
+  return Math.min(CONFIG.minTimePerQuestion + extra, CONFIG.maxTimePerQuestion);
+}
+
+let audioCtx = null;
+function initAudio() {
+  if (!audioCtx) {
+    try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+    catch(e) { audioCtx = null; }
+  }
+}
+function playTone(freq, duration, type='sine', vol=0.15) {
+  if (!CONFIG.soundEnabled || !audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(); osc.stop(audioCtx.currentTime + duration);
+}
+function soundCorrect() { initAudio(); playTone(660,0.12,'sine'); setTimeout(()=>playTone(880,0.18,'sine'),110); }
+function soundWrong()   { initAudio(); playTone(220,0.25,'sawtooth',0.12); }
+function soundTick()    { if (!CONFIG.soundEnabled || !audioCtx) return; playTone(1000,0.05,'square',0.05); }
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function showScreen(id) {
+  ['menu-screen','quiz-screen','result-screen','lb-screen'].forEach(s => {
+    document.getElementById(s).classList.add('hidden');
+    document.getElementById(s).classList.remove('show');
+  });
+  document.getElementById(id).classList.remove('hidden');
+  if (id === 'result-screen') document.getElementById(id).classList.add('show');
+}
+
+function startQuiz(isExam) {
+  studentName = document.getElementById('student-name').value.trim();
+  studentClass = document.getElementById('student-class').value.trim();
+  
+  if (!studentName || !studentClass) {
+    alert("Mohon isi Nama dan Kelas terlebih dahulu!");
+    return;
+  }
+
+  // Pengecekan jika soal masih kosong
+  if (QUESTIONS.length === 0) { 
+    alert('Belum ada soal. Silakan isi data soal terlebih dahulu di dalam kode HTML.'); 
+    return; 
+  }
+  
+  initAudio();
+  examMode = isExam;
+  current = 0; score = 0; answered = false;
+  userAnswers = [];
+  order = CONFIG.shuffleQuestions
+    ? shuffle(QUESTIONS.map((_, i) => i))
+    : QUESTIONS.map((_, i) => i);
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+function renderQuestion() {
+  answered = false;
+  const qIdx = order[current];
+  let q = QUESTIONS[qIdx];
+  let options = q.o.slice();
+  let correct = q.a;
+
+  if (CONFIG.shuffleOptions) {
+    const pairs = options.map((opt, i) => ({ opt, isCorrect: i === correct }));
+    const shuffled = shuffle(pairs);
+    options = shuffled.map(p => p.opt);
+    correct = shuffled.findIndex(p => p.isCorrect);
+  }
+
+  q = { ...q, o: options, a: correct };
+  currentQ = q;
+
+  document.getElementById('question-text').textContent = q.q;
+  document.getElementById('progress-text').textContent = `Soal ${current + 1} / ${order.length}`;
+  document.getElementById('score-text').textContent = `Skor: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(current / order.length) * 100}%`;
+
+  const container = document.getElementById('options-container');
+  container.innerHTML = '';
+  q.o.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option';
+    btn.innerHTML = `<span class="label">${LABELS[i]}.</span> <span>${opt}</span>`;
+    btn.onclick = () => selectAnswer(i, q);
+    container.appendChild(btn);
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.className = 'feedback';
+  fb.innerHTML = '';
+  document.getElementById('next-btn').disabled = true;
+  document.getElementById('next-btn').textContent = current === order.length - 1 ? 'Lihat Hasil →' : 'Lanjut →';
+
+  startTimer(q);
+}
+
+function startTimer(q) {
+  clearInterval(timerInterval);
+  const timerEl = document.getElementById('timer-display');
+  const total = getQuestionTime(q);
+  if (total <= 0) { timerEl.style.display = 'none'; return; }
+  timerEl.style.display = 'inline-block';
+  timeLeft = total;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if (timeLeft <= 5 && timeLeft > 0) soundTick();
+    if (timeLeft <= 0) { clearInterval(timerInterval); timeOut(); }
+  }, 1000);
+}
+function updateTimerDisplay() {
+  const el = document.getElementById('timer-display');
+  el.textContent = `⏱️ ${timeLeft}s`;
+  el.classList.toggle('warning', timeLeft <= 5);
+}
+
+function timeOut() {
+  if (answered) return;
+  answered = true;
+  const q = currentQ;
+  const qIdx = order[current];
+  userAnswers.push({ qIdx, selected: -1, correct: q.a, isCorrect: false, timedOut: true });
+
+  document.querySelectorAll('.option').forEach((el, i) => {
+    el.classList.add('disabled');
+    if (i === q.a) el.classList.add('correct');
+  });
+
+  if (!examMode) {
+    soundWrong();
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show wrong';
+    fb.innerHTML = `⏰ Waktu habis! Jawaban benar: <b>${LABELS[q.a]}. ${q.o[q.a]}</b>${q.p ? `<small>💡 ${q.p}</small>` : ''}`;
+  }
+  document.getElementById('next-btn').disabled = false;
+  document.getElementById('score-text').textContent = `Skor: ${score}`;
+}
+
+function selectAnswer(selected, q) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timerInterval);
+
+  const qIdx = order[current];
+  const correct = q.a;
+  const options = document.querySelectorAll('.option');
+
+  if (examMode) {
+    options.forEach((el, i) => {
+      el.classList.add('disabled');
+      if (i === selected) el.classList.add('selected');
+    });
+    if (selected === correct) score++;
+    userAnswers.push({ qIdx, selected, correct, isCorrect: selected === correct });
+  } else {
+    options.forEach((el, i) => {
+      el.classList.add('disabled');
+      if (i === correct) el.classList.add('correct');
+      if (i === selected && i !== correct) el.classList.add('wrong');
+    });
+    const isCorrect = selected === correct;
+    if (isCorrect) { score++; soundCorrect(); } else soundWrong();
+    userAnswers.push({ qIdx, selected, correct, isCorrect });
+
+    const fb = document.getElementById('feedback');
+    fb.className = 'feedback show ' + (isCorrect ? 'correct' : 'wrong');
+    fb.innerHTML = isCorrect
+      ? `✅ Benar!${q.p ? `<small>💡 ${q.p}</small>` : ''}`
+      : `❌ Salah. Jawaban benar: <b>${LABELS[correct]}. ${q.o[correct]}</b>${q.p ? `<small>💡 ${q.p}</small>` : ''}`;
+  }
+
+  document.getElementById('score-text').textContent = `Skor: ${score}`;
+  document.getElementById('next-btn').disabled = false;
+}
+
+document.getElementById('next-btn').onclick = () => {
+  current++;
+  if (current >= order.length) showResult();
+  else renderQuestion();
+};
+
+function showResult() {
+  clearInterval(timerInterval);
+  showScreen('result-screen');
+  const pct = Math.round((score / order.length) * 100);
+  document.getElementById('final-score').textContent = `${score} / ${order.length}`;
+  let msg = '';
+  if (pct >= 90) msg = '🌟 Luar biasa! Pemahaman kamu sangat bagus!';
+  else if (pct >= 70) msg = '👍 Bagus! Sedikit lagi sempurna.';
+  else if (pct >= 50) msg = '💪 Cukup baik. Terus berlatih!';
+  else msg = '📚 Jangan menyerah. Ulangi dan pelajari lagi!';
+  
+  document.getElementById('final-detail').innerHTML =
+    `${pct}% benar<br>${msg}<br><small style="color:#999;">Sesi: ${CURRENT_SESSION} | Mode: ${examMode ? 'Ujian' : 'Latihan'} | Siswa: ${studentName} (${studentClass})</small>`;
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '<h3 style="margin-bottom:10px;color:#333;">Review Jawaban &amp; Penjelasan:</h3>';
+  
+  let wrongNumbers = [];
+  userAnswers.forEach((ua, i) => {
+    const q = QUESTIONS[ua.qIdx];
+    const div = document.createElement('div');
+    div.className = 'review-item ' + (ua.isCorrect ? 'correct' : 'wrong');
+    const yourAns = ua.selected === -1
+      ? '<span class="no">(tidak dijawab / waktu habis)</span>'
+      : `<span class="${ua.isCorrect ? 'ok' : 'no'}">${LABELS[ua.selected]}. ${q.o[ua.selected]}</span>`;
+    
+    if (!ua.isCorrect) {
+      wrongNumbers.push(i + 1);
+    }
+
+    div.innerHTML = `
+      <div class="review-q">${i + 1}. ${q.q}</div>
+      <div class="review-a">
+        Jawabanmu: ${yourAns}
+        ${!ua.isCorrect ? ` | Benar: <span class="ok">${LABELS[ua.correct]}. ${q.o[ua.correct]}</span>` : ''}
+      </div>
+      ${q.p ? `<div class="review-p">💡 ${q.p}</div>` : ''}`;
+    list.appendChild(div);
+  });
+
+  saveToLeaderboard(score, order.length);
+
+  sendReportToGoogleSheets(score, order.length, pct, wrongNumbers.join(', '));
+}
+
+// ============================================================
+// ====== FUNGSI PENGIRIMAN KE GOOGLE SHEETS ======
+// ============================================================
+function sendReportToGoogleSheets(score, total, pct, wrongNumbers) {
+  const statusEl = document.getElementById('send-status');
+  
+  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL === 'URL_HASIL_DEPLOY_ANDA_DISINI') {
+    statusEl.textContent = "⚠️ Peringatan: URL Google Apps Script belum diatur.";
+    statusEl.style.color = "red";
+    return;
+  }
+
+  statusEl.textContent = "⏳ Mengirim laporan ke Google Sheets dan Email...";
+  statusEl.style.color = "#667eea";
+
+  const now = new Date();
+  const attemptId = 'ATT-' + now.getTime() + '-' + Math.random().toString(36).substring(2, 6);
+
+  const payload = {
+    sesi: CURRENT_SESSION,           
+    attemptId: attemptId,            
+    tanggal: now.toLocaleDateString('id-ID'), 
+    waktu: now.toLocaleTimeString('id-ID'),
+    nama: studentName,
+    kelas: studentClass,
+    kategori: "Irodori Pink & Kuning", 
+    mode: examMode ? "Ujian" : "Latihan",
+    skor: score,
+    total: total,
+    persentase: pct,
+    detailSalah: wrongNumbers || "Tidak ada"
+  };
+
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors', 
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(() => {
+    statusEl.innerHTML = "✅ Laporan berhasil dikirim ke Google Sheets dan Email Guru!";
+    statusEl.style.color = "#28a745";
+  })
+  .catch((error) => {
+    console.error('Error!', error);
+    statusEl.textContent = "❌ Gagal mengirim laporan. Periksa koneksi internet.";
+    statusEl.style.color = "red";
+  });
+}
+
+function getLeaderboard() {
+  try { return JSON.parse(localStorage.getItem(CONFIG.leaderboardKey)) || []; }
+  catch(e) { return []; }
+}
+function saveToLeaderboard(sc, total) {
+  const entry = {
+    score: sc, total: total,
+    pct: Math.round((sc / total) * 100),
+    mode: examMode ? 'Ujian' : 'Latihan',
+    date: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' })
+  };
+  const lb = getLeaderboard();
+  lb.push(entry);
+  lb.sort((a, b) => b.pct - a.pct || b.score - a.score);
+  localStorage.setItem(CONFIG.leaderboardKey, JSON.stringify(lb.slice(0, CONFIG.maxLeaderboard)));
+}
+function renderLeaderboard() {
+  const lb = getLeaderboard();
+  const content = document.getElementById('lb-content');
+  if (lb.length === 0) {
+    content.innerHTML = '<p class="lb-empty">Belum ada skor tersimpan.<br>Selesaikan quiz dulu untuk masuk leaderboard!</p>';
+    return;
+  }
+  let html = '<table class="lb-table"><thead><tr><th>#</th><th>Skor</th><th>%</th><th>Mode</th><th>Tanggal</th></tr></thead><tbody>';
+  lb.forEach((e, i) => {
+    const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1);
+    html += `<tr><td>${medal}</td><td>${e.score}/${e.total}</td><td>${e.pct}%</td><td>${e.mode}</td><td>${e.date}</td></tr>`;
+  });
+  html += '</tbody></table>';
+  content.innerHTML = html;
+}
+
+document.getElementById('copy-session-btn').addEventListener('click', copySessionLink);
+
+document.getElementById('start-normal-btn').onclick = () => startQuiz(false);
+document.getElementById('start-exam-btn').onclick = () => startQuiz(true);
+document.getElementById('restart-btn').onclick = () => startQuiz(examMode);
+document.getElementById('back-menu-btn').onclick = () => showScreen('menu-screen');
+document.getElementById('show-lb-btn').onclick = () => { renderLeaderboard(); showScreen('lb-screen'); };
+document.getElementById('lb-back-btn').onclick = () => showScreen('menu-screen');
+document.getElementById('clear-lb-btn').onclick = () => {
+  if (confirm('Hapus semua skor di leaderboard?')) {
+    localStorage.removeItem(CONFIG.leaderboardKey);
+    renderLeaderboard();
+  }
+};
+
+function updateMenuInfo() {
+  const n = QUESTIONS.length;
+  document.getElementById('menu-subtitle').textContent = `${n} Soal • Referensi IRODORI`;
+  document.getElementById('timer-badge').textContent = `⏱️ Min ${CONFIG.minTimePerQuestion}s (adaptif)`;
+}
+
+updateMenuInfo();
+updateSessionUI(); 
+showScreen('menu-screen');
+</script>
+</body>
+</html>
